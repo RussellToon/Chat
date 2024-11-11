@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct Message: Identifiable {
+struct Message: Identifiable, Hashable {
 
     let id: String
     let timestamp: Date

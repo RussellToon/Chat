@@ -49,8 +49,6 @@ struct ConversationsView: View {
             HStack {
                 Text("\(conversation.name)")
                     .lineLimit(1)
-                //.font(.callout)
-                //.bold()
                 Spacer()
             }
             let time = model.formattedLastUpdate(conversation: conversation)

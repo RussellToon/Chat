@@ -30,7 +30,7 @@ struct ContentView: View {
 #endif
                 }
         } detail: {
-            Text("Select an item")
+            Text("Select a conversation")
         }
     }
 

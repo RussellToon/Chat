@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct MessagesView: View {
 
     var model: MessagesViewModel
@@ -35,6 +36,23 @@ struct MessagesView: View {
         .navigationTitle("Messages")
     }
 
+    private func messagesList(messages: [Message], scrollTo rowId: String) -> some View {
+        ScrollViewReader { scrollProxy in
+            List(messages, id: \.id) { message in
+                MessageView(message: message)
+                    .listRowSeparator(.hidden)
+                    .id(message.id)
+            }
+            .defaultScrollAnchor(.bottom)
+            .listStyle(.plain)
+            .onChange(of: rowId) { oldValue, newValue in
+                withAnimation {
+                    scrollProxy.scrollTo(rowId)
+                }
+            }
+        }
+    }
+
     private func composeField() -> some View {
         HStack {
             TextField("Reply", text: $replyCompose)
@@ -59,25 +77,6 @@ struct MessagesView: View {
         }
     }
 
-    private func messagesList(messages: [Message], scrollTo rowId: String) -> some View {
-        ScrollViewReader { scrollProxy in
-            List {
-                ForEach(messages) { message in
-                    MessageView(message: message)
-                        .listRowSeparator(.hidden)
-                        .id(message.id)
-                }
-            }
-            .defaultScrollAnchor(.bottom)
-            .listStyle(.plain)
-            .onChange(of: rowId) { oldValue, newValue in
-                withAnimation {
-                    scrollProxy.scrollTo(rowId)
-                }
-            }
-        }
-    }
-
     private func scrollUp() {
         Task { @MainActor in
             try await Task.sleep(for: .seconds(0.3))
@@ -92,34 +91,33 @@ struct MessagesView: View {
         var body: some View {
             HStack {
                 Spacer()
-                VStack {
-                    HStack {
-                        Spacer()
-                        Text("\(message.text)")
-                            .colorInvert()
-                        //.font(.callout)
-                        //.bold()
+                HStack {
+                    VStack(alignment: .trailing) {
+                        HStack {
+                            Text("\(message.text)")
+                                .lineLimit(nil)
+                                .multilineTextAlignment(.trailing)
+                                .colorInvert()
+                        }
+                        let time = MessagesViewModel.formattedLastUpdate(message: message)
+                        HStack {
+                            Text(time)
+                                .colorInvert()
+                                .font(.footnote)
+                        }
                     }
-                    let time = MessagesViewModel.formattedLastUpdate(message: message)
-                    HStack {
-                        Spacer()
-                        Text(time)
-                            .colorInvert()
-                            .font(.footnote)
-                    }
-                }
-                .fixedSize()
-                .padding()
-                .background(.blue)
-                .clipShape(
-                    .rect(
-                        topLeadingRadius: 16,
-                        bottomLeadingRadius: 16,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 16,
-                        style: .continuous
+                    .padding()
+                    .background(.blue)
+                    .clipShape(
+                        .rect(
+                            topLeadingRadius: 16,
+                            bottomLeadingRadius: 16,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 16,
+                            style: .continuous
+                        )
                     )
-                )
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct Conversation: Identifiable {
+struct Conversation: Identifiable, Hashable {
 
     let id: String
     let name: String
